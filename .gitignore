@@ -32,6 +32,10 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+results
+graphify-out
+data
+logs
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

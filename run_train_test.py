@@ -123,7 +123,7 @@ def run(config:dict,
         # load dates
         dates_filepath = 'data/F-F_Research_Data_5_Factors_2x3_daily.CSV'
         if not os.path.exists(dates_filepath):
-            ff5 = pd.read_csv("https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_5_Factors_2x3_daily_CSV.zip", header=2, index_col=0)
+            ff5 = pd.read_csv("https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_5_Factors_2x3_daily_CSV.zip", header=3, index_col=0)
             ff5.to_csv(dates_filepath)
         FamaFrenchDailyData = pd.read_csv(dates_filepath, index_col=0) / 100
         daily_dates = pd.to_datetime(
@@ -196,7 +196,15 @@ def run(config:dict,
             else:
                 device_ids = gpu_device_ids
 
-            # prepare output folder            
+            # Determine compute device: CUDA if available, else CPU
+            # MPS (Apple Silicon) is skipped — code uses CUDA-specific internals incompatible with MPS
+            if device_ids:
+                _compute_device = f'cuda:{device_ids[0]}'
+            else:
+                _compute_device = 'cpu'
+                logging.info("No CUDA GPUs found - falling back to CPU")
+
+            # prepare output folder
             outdir = os.path.join(str(pathlib.Path().resolve()), 'results', config['model_name'])
             if not os.path.exists(outdir):
                 os.makedirs(outdir)
@@ -217,10 +225,10 @@ def run(config:dict,
                                                                      residual_weights = residual_weights,
                                                                      save_params = True,
                                                                      force_retrain = config['force_retrain'],
-                                                                     parallelize = True, 
+                                                                     parallelize = len(device_ids) > 0,
                                                                      log_dev_progress_freq = 10, 
                                                                      log_plot_freq = 149, 
-                                                                     device = f'cuda:{device_ids[0]}', 
+                                                                     device = _compute_device,
                                                                      device_ids = device_ids,
                                                                      output_path = outdir, 
                                                                      num_epochs = config['num_epochs'], 
@@ -244,10 +252,10 @@ def run(config:dict,
                                                                          residual_weights = residual_weights,
                                                                          save_params = True,
                                                                          force_retrain = config['force_retrain'],
-                                                                         parallelize = True, 
+                                                                         parallelize = len(device_ids) > 0,
                                                                          log_dev_progress_freq = 10, 
                                                                          log_plot_freq = 149, 
-                                                                         device = f'cuda:{device_ids[0]}', 
+                                                                         device = _compute_device,
                                                                          device_ids = device_ids,
                                                                          output_path = outdir, 
                                                                          num_epochs = config['num_epochs'], 
