@@ -1,0 +1,16 @@
+[project]
+name = "dlsa"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.26.4",
+    "pandas>=1.5.3",
+    "torch>=2.8.0",
+    "matplotlib>=3.9.4",
+    "scikit-learn>=1.6.1",
+    "pyyaml>=6.0.3",
+    "gpuinfo>=1.0.0a7",
+    "petname>=2.6",
+    "twilio>=9.10.9",
+    "psutil>=5.8.0",
+]
