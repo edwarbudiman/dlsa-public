@@ -126,7 +126,9 @@ def run(config:dict,
             ff5 = pd.read_csv("https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_5_Factors_2x3_daily_CSV.zip", header=3, index_col=0)
             ff5.to_csv(dates_filepath)
         FamaFrenchDailyData = pd.read_csv(dates_filepath, index_col=0) / 100
-        _idx = FamaFrenchDailyData.index.astype(int)
+        _idx = pd.to_numeric(FamaFrenchDailyData.index, errors='coerce')
+        FamaFrenchDailyData = FamaFrenchDailyData[_idx.notna()]
+        _idx = _idx[_idx.notna()].astype(int)
         daily_dates = pd.to_datetime(
             FamaFrenchDailyData.index[(_idx > 19980000) & (_idx < 20170000)],
             format ='%Y%m%d')
